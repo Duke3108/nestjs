@@ -16,7 +16,7 @@ export class User {
   @Column({ type: 'varchar', unique: true, nullable: false })
   email!: string;
 
-  @Column({ type: 'varchar', unique: true, nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   phone!: string;
 
   @Column({ type: 'varchar', nullable: false })
@@ -52,6 +52,9 @@ export class User {
 
   @Column({ type: 'varchar', nullable: true })
   registerToken!: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  registerExpires!: Date | null;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt!: Date;
