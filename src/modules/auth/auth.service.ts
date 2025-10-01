@@ -9,11 +9,15 @@ import { generateAccessToken, generateRefreshToken } from 'src/utils/jwt';
 import addMailJob, { MailJobData } from 'src/queues/mail.producer';
 import makeToken from 'uniqid';
 import jwt from 'jsonwebtoken';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   private readonly userRepository: GenericRepository<User>;
-  constructor(manager: EntityManager) {
+  constructor(
+    manager: EntityManager,
+    private jwtService: JwtService,
+  ) {
     this.userRepository = new GenericRepository(User, manager);
   }
 
@@ -27,7 +31,7 @@ export class AuthService {
   async hashPassword(password: string): Promise<string> {
     const salt = await brcypt.genSalt(10);
     const hashPassword = await brcypt.hash(password, salt);
-    return hashPassword as string;
+    return hashPassword;
   }
 
   async createPasswordChangeToken(userId: number) {
@@ -117,8 +121,8 @@ export class AuthService {
     await this.userRepository.update(user.id, {
       refreshToken: newRefreshToken,
     });
-
-    const accessToken = generateAccessToken(user.id, user.role);
+    const tokenPayload = { id: user.id, role: user.role };
+    const accessToken = await this.jwtService.signAsync(tokenPayload);
     return { message: 'Đăng nhập thành công', accessToken };
   }
 
