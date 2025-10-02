@@ -3,7 +3,7 @@ import chalk from 'chalk';
 
 export class CustomLogger implements LoggerService {
   log(message: any, context?: string) {
-    if (context === 'RouterExplorer') return; // chặn log của RouterExplorer
+    if (context === 'RouterExplorer' || context === 'InstanceLoader') return; // chặn log của RouterExplorer
     console.log(chalk.green(`[LOG] ${context ?? ''} - ${message}`));
   }
   error(message: any, trace?: string, context?: string) {

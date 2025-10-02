@@ -28,7 +28,7 @@ export class AuthService {
     return !!brcypt.compareSync(inputPassword, hashedPassword);
   }
 
-  async hashPassword(password: string): Promise<string> {
+  async hashPassword(password: string) {
     const salt = await brcypt.genSalt(10);
     const hashPassword = await brcypt.hash(password, salt);
     return hashPassword;
@@ -110,12 +110,19 @@ export class AuthService {
     return { message: 'Xác thực tài khoản thành công' };
   }
 
+  async validateUser(email: string, password: string): Promise<User | null> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) return null;
+    if (!AuthService.isCorrectPassword(password, user.password)) return null;
+    return user;
+  }
+
   async login(email: string, password: string) {
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) throw new BadRequestException('Tài khoản không tồn tại');
     if (!user.emailVerified)
       throw new BadRequestException('Vui lòng xác thực email');
-    if (!AuthService.isCorrectPassword(password, user.password))
+    if (password !== user.password)
       throw new BadRequestException('Sai mật khẩu');
     const newRefreshToken = generateRefreshToken(user.id);
     await this.userRepository.update(user.id, {

@@ -5,10 +5,12 @@ import { UserModule } from 'src/modules/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtGuard } from 'src/modules/auth/guards/jwt.guard';
 import { LocalGuard } from 'src/modules/auth/guards/local.guard';
+import { LocalStrategy } from 'src/modules/auth/strategies/local.strategy';
+import { JwtStrategy } from 'src/modules/auth/strategies/jwt.strategy';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, JwtGuard, LocalGuard],
+  providers: [AuthService, JwtGuard, LocalGuard, LocalStrategy, JwtStrategy],
   imports: [
     UserModule,
     JwtModule.register({

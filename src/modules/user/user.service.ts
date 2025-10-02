@@ -4,16 +4,24 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { EntityManager, IsNull, Not } from 'typeorm';
 import { User } from 'src/modules/user/entities/user.entity';
 import { GenericRepository } from 'src/repositories/genericRepository';
+import brcypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {
   private readonly userRepository: GenericRepository<User>;
+
   constructor(
     // @InjectRepository(User)
     // private userRepository: Repository<User>,
     manager: EntityManager,
   ) {
     this.userRepository = new GenericRepository(User, manager);
+  }
+
+  async hashPassword(password: string) {
+    const salt = await brcypt.genSalt(10);
+    const hashPassword = await brcypt.hash(password, salt);
+    return hashPassword;
   }
 
   async getUserProfile(id: number) {
@@ -26,6 +34,10 @@ export class UserService {
       'phoneVerified',
       'createdAt',
     ]);
+  }
+
+  async getUserByAdmin(id: number) {
+    return await this.userRepository.findById(id);
   }
 
   async getAllUsers() {
@@ -42,12 +54,38 @@ export class UserService {
     });
   }
 
-  async createUser(userData: CreateUserDto) {
+  async createUser(
+    userData: CreateUserDto,
+    req: { user: { id: number; role: string } },
+  ) {
+    if (req.user.role !== '3108') {
+      throw new BadRequestException(
+        'Bạn không có quyền thực hiện hành động này',
+      );
+    }
     const existingUser = await this.userRepository.findOne({
       where: { email: userData.email },
     });
     if (existingUser) throw new BadRequestException('Email đã được sử dụng');
-    return await this.userRepository.create(userData);
+    return await this.userRepository.create({
+      ...userData,
+      password: await this.hashPassword(userData.password),
+    });
+  }
+
+  async updateProfile(id: number, userData: UpdateUserDto) {
+    const user = await this.userRepository.findById(id);
+    if (!user) throw new BadRequestException('Tài khoản không tồn tại');
+    const safeData: UpdateUserDto = { ...userData };
+    if (user.emailVerified && 'email' in safeData) {
+      delete safeData.email;
+      throw new BadRequestException('Email đã xác minh');
+    }
+    if (user.phoneVerified && 'phone' in safeData) {
+      delete safeData.phone;
+      throw new BadRequestException('Số điện thoại đã xác minh');
+    }
+    return await this.userRepository.update(id, safeData);
   }
 
   async updateUser(id: number, userData: UpdateUserDto) {
@@ -69,8 +107,26 @@ export class UserService {
     await this.userRepository.delete(id, 'Tài khoản không tồn tại');
   }
 
-  async blockUser(id: number) {
-    await this.userRepository.softDelete(id, 'Tài khoản không tồn tại');
+  async blockUser(id: number, req: { user: { id: number; role: string } }) {
+    if (id === req.user.id) {
+      return { message: 'Bạn không thể xóa chính mình' };
+    } else if (req.user.role !== '3108') {
+      return { message: 'Bạn không có quyền chặn người dùng' };
+    } else if (id !== req.user.id && req.user.role === '3108') {
+      const user = await this.userRepository.findById(id);
+      if (!user) throw new BadRequestException('Tài khoản không tồn tại');
+      if (user.role === '3108') {
+        return { message: 'Bạn không thể chặn admin khác' };
+      }
+      if (user.deletedAt) {
+        return { message: 'Tài khoản đã bị khóa' };
+      }
+      return await this.userRepository.softDelete(
+        id,
+        'Tài khoản không tồn tại',
+      );
+    }
+
     return { message: 'Đã khóa tài khoản' };
   }
 
