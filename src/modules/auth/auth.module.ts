@@ -7,12 +7,14 @@ import { JwtGuard } from 'src/modules/auth/guards/jwt.guard';
 import { LocalGuard } from 'src/modules/auth/guards/local.guard';
 import { LocalStrategy } from 'src/modules/auth/strategies/local.strategy';
 import { JwtStrategy } from 'src/modules/auth/strategies/jwt.strategy';
+import { MailModule } from 'src/modules/mail/mail.module';
 
 @Module({
   controllers: [AuthController],
   providers: [AuthService, JwtGuard, LocalGuard, LocalStrategy, JwtStrategy],
   imports: [
     UserModule,
+    MailModule,
     JwtModule.register({
       global: true,
       secret: process.env.JWT_ACCESS_KEY,

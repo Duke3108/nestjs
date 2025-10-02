@@ -6,19 +6,20 @@ import { User } from 'src/modules/user/entities/user.entity';
 import brcypt from 'bcryptjs';
 import crypto from 'crypto';
 import { generateAccessToken, generateRefreshToken } from 'src/utils/jwt';
-import addMailJob, { MailJobData } from 'src/queues/mail.producer';
 import makeToken from 'uniqid';
 import jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 import otpGenerator from 'otp-generator';
 import twilio from 'twilio';
+import { MailService } from 'src/modules/mail/mail.service';
 
 @Injectable()
 export class AuthService {
   private readonly userRepository: GenericRepository<User>;
   constructor(
     manager: EntityManager,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {
     this.userRepository = new GenericRepository(User, manager);
   }
@@ -57,6 +58,13 @@ export class AuthService {
     return resetToken;
   }
 
+  async validateUser(email: string, password: string): Promise<User | null> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) return null;
+    if (!AuthService.isCorrectPassword(password, user.password)) return null;
+    return user;
+  }
+
   async register(userData: CreateAuthDto) {
     const token = makeToken();
     const user = await this.userRepository.findOne({
@@ -87,14 +95,7 @@ export class AuthService {
       registerToken: token,
       registerExpires: new Date(Date.now() + 15 * 60 * 1000),
     });
-    const mailData: MailJobData = {
-      email: userData.email,
-      subject: 'Xác thực tài khoản',
-      html: `<p>Vui lòng click vào đường link bên dưới để xác thực tài khoản (Lưu ý: liên kết này sẽ hết hạn sau 15 phút)</p>
-      <a href="${process.env.URL_SERVER}/api/v1/auth/verify-email/${token}">Xác thực tài khoản</a>`,
-    };
-
-    await this.sendMail(mailData);
+    await this.mailService.sendRegisterMail(userData.email, token);
     return {
       message: 'Vui lòng kiểm tra email của bạn',
     };
@@ -117,13 +118,6 @@ export class AuthService {
       registerExpires: null,
     });
     return { message: 'Xác thực tài khoản thành công' };
-  }
-
-  async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.userRepository.findOne({ where: { email } });
-    if (!user) return null;
-    if (!AuthService.isCorrectPassword(password, user.password)) return null;
-    return user;
   }
 
   async login(email: string, password: string) {
@@ -163,12 +157,7 @@ export class AuthService {
     if (!user.emailVerified)
       throw new BadRequestException('Vui lòng xác thực email');
     const token = await this.createPasswordChangeToken(user.id);
-    const mailData: MailJobData = {
-      email: user.email,
-      subject: 'Đặt lại mật khẩu',
-      html: `<p>Mã xác thực của bạn là: <strong>${token}</strong></p>`,
-    };
-    await this.sendMail(mailData);
+    await this.mailService.sendResetPasswordMail(email, token);
     return { message: 'Vui lòng kiểm tra email của bạn' };
   }
 
@@ -248,9 +237,5 @@ export class AuthService {
       phoneVerified: true,
     });
     return { message: 'Xác thực thành công' };
-  }
-
-  async sendMail(data: MailJobData): Promise<void> {
-    await addMailJob(data);
   }
 }
