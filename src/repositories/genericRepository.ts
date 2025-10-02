@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import {
   EntityManager,
   Repository,
@@ -74,13 +75,13 @@ export class GenericRepository<T extends ObjectLiteral> {
 
   public async delete(id: number | string, msg?: string): Promise<void> {
     const entity = await this.findById(id);
-    if (!entity) throw new Error(msg);
+    if (!entity) throw new BadRequestException(msg);
     await this.repository.delete(id);
   }
 
   public async softDelete(id: number, msg: string): Promise<void> {
     const entity = await this.findById(id);
-    if (!entity) throw new Error(msg);
+    if (!entity) throw new BadRequestException(msg);
     await this.repository.softDelete(id);
   }
 

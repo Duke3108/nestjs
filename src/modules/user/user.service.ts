@@ -108,25 +108,25 @@ export class UserService {
   }
 
   async blockUser(id: number, req: { user: { id: number; role: string } }) {
+    if (req.user.role !== '3108') {
+      throw new BadRequestException('Bạn không có quyền chặn người dùng');
+    }
     if (id === req.user.id) {
-      return { message: 'Bạn không thể xóa chính mình' };
-    } else if (req.user.role !== '3108') {
-      return { message: 'Bạn không có quyền chặn người dùng' };
-    } else if (id !== req.user.id && req.user.role === '3108') {
-      const user = await this.userRepository.findById(id);
-      if (!user) throw new BadRequestException('Tài khoản không tồn tại');
+      throw new BadRequestException('Bạn không thể xóa chính mình');
+    }
+    const user = await this.userRepository.getRepository().findOne({
+      where: { id },
+      withDeleted: true,
+    });
+    if (user) {
       if (user.role === '3108') {
-        return { message: 'Bạn không thể chặn admin khác' };
+        throw new BadRequestException('Bạn không thể chặn admin khác');
       }
       if (user.deletedAt) {
-        return { message: 'Tài khoản đã bị khóa' };
+        throw new BadRequestException('Tài khoản đã bị khóa');
       }
-      return await this.userRepository.softDelete(
-        id,
-        'Tài khoản không tồn tại',
-      );
     }
-
+    await this.userRepository.softDelete(id, 'Tài khoản không tồn tại');
     return { message: 'Đã khóa tài khoản' };
   }
 

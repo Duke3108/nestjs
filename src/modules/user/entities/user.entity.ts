@@ -56,6 +56,12 @@ export class User {
   @Column({ type: 'timestamp', nullable: true })
   registerExpires!: Date | null;
 
+  @Column({ type: 'varchar', nullable: true })
+  otp!: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  otpExpires!: Date | null;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt!: Date;
 

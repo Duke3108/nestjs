@@ -10,6 +10,8 @@ import addMailJob, { MailJobData } from 'src/queues/mail.producer';
 import makeToken from 'uniqid';
 import jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
+import otpGenerator from 'otp-generator';
+import twilio from 'twilio';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +21,13 @@ export class AuthService {
     private jwtService: JwtService,
   ) {
     this.userRepository = new GenericRepository(User, manager);
+  }
+
+  private formatPhoneNumber(phone: string): string {
+    if (phone.startsWith('0')) {
+      return '+84' + phone.substring(1);
+    }
+    return phone;
   }
 
   private static isCorrectPassword(
@@ -190,6 +199,55 @@ export class AuthService {
     });
 
     return { message: 'Đặt lại mật khẩu thành công' };
+  }
+
+  async sendOtpToPhone(phone: string) {
+    const user = await this.userRepository.findOne({ where: { phone } });
+    if (!user) throw new BadRequestException('Tài khoản không tồn tại');
+
+    const otp = otpGenerator.generate(6, {
+      upperCaseAlphabets: false,
+      specialChars: false,
+      lowerCaseAlphabets: false,
+    });
+    await this.userRepository.update(user.id, {
+      otp,
+      otpExpires: new Date(Date.now() + 10 * 60 * 1000),
+    });
+    await this.sendSms(phone, `Mã OTP của bạn là: ${otp}`);
+    return { message: 'Đã gửi mã OTP đến số điện thoại của bạn' };
+  }
+
+  async sendSms(phone: string, body: string) {
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
+    const from = process.env.TWILIO_PHONE_NUMBER;
+    const to = this.formatPhoneNumber(phone);
+    const client = twilio(accountSid, authToken);
+    await client.messages.create({
+      body,
+      from,
+      to,
+    });
+  }
+
+  async verifyOtp(phone: string, otp: string) {
+    const user = await this.userRepository.findOne({ where: { phone } });
+    if (!user) throw new BadRequestException('Tài khoản không tồn tại');
+    if (user.otp !== otp) throw new BadRequestException('Mã OTP không hợp lệ');
+    if (user.otpExpires && user.otpExpires < new Date()) {
+      await this.userRepository.update(user.id, {
+        otp: null,
+        otpExpires: null,
+      });
+      throw new BadRequestException('Mã OTP đã hết hạn');
+    }
+    await this.userRepository.update(user.id, {
+      otp: null,
+      otpExpires: null,
+      phoneVerified: true,
+    });
+    return { message: 'Xác thực thành công' };
   }
 
   async sendMail(data: MailJobData): Promise<void> {
