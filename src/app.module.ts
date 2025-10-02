@@ -5,6 +5,8 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import typeorm from 'src/config/typeorm';
 import { StartTimeMiddleware } from 'src/common/middlewares/startTime.middleware';
+import { BullModule } from '@nestjs/bullmq';
+import { MailModule } from './modules/mail/mail.module';
 
 @Module({
   imports: [
@@ -21,6 +23,13 @@ import { StartTimeMiddleware } from 'src/common/middlewares/startTime.middleware
       ): Promise<TypeOrmModuleOptions> =>
         (await configService.get('typeorm')) as TypeOrmModuleOptions,
     }),
+    BullModule.forRoot({
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
+    MailModule,
   ],
 })
 export class AppModule {
