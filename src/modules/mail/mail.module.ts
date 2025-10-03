@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { BullModule } from '@nestjs/bullmq';
 import { MailProcessor } from 'src/modules/mail/mail.processor';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { join } from 'path';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   providers: [MailService, MailProcessor],
@@ -12,6 +15,25 @@ import { MailProcessor } from 'src/modules/mail/mail.processor';
         host: 'localhost',
         port: 6379,
         password: '123456',
+      },
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.EMAIL_NAME,
+          pass: process.env.EMAIL_APP_PASSWORD,
+        },
+      },
+      defaults: {
+        from: '"Duke-Authentication" <no-reply@example.com>',
+      },
+      template: {
+        dir: join(__dirname, 'templates'),
+        adapter: new HandlebarsAdapter(),
+        options: { strict: true },
       },
     }),
   ],
