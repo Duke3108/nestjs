@@ -1,29 +1,32 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
-import nodemailer from 'nodemailer';
+import { MailJobData } from 'src/common/interfaces';
 
 @Processor('mail-queue')
 export class MailProcessor extends WorkerHost {
-  private transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_NAME,
-      pass: process.env.EMAIL_APP_PASSWORD,
-    },
-  });
+  constructor(private readonly mailerService: MailerService) {
+    super();
+  }
 
-  async process(job: Job<any, any, string>): Promise<any> {
-    const { email, subject, html } = job.data;
-    const info = await this.transporter.sendMail({
-      from: '"Duke-Authentication" <no-reply>',
+  process(job: Job<MailJobData, void, string>): Promise<void> {
+    console.log(job);
+    const { email, subject, html, template, context } = job.data;
+
+    if (template) {
+      return this.mailerService.sendMail({
+        to: email,
+        subject,
+        template,
+        context,
+      });
+    }
+
+    return this.mailerService.sendMail({
       to: email,
       subject,
       html,
     });
-    console.log(`Mail sent to ${email}`);
-    return info;
   }
 
   @OnWorkerEvent('completed')
