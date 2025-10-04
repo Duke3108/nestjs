@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtPayload, VerifyErrors } from 'jsonwebtoken';
 
 @Injectable()
 export class JwtGuard extends AuthGuard('jwt') {
@@ -29,7 +30,11 @@ export class JwtGuard extends AuthGuard('jwt') {
   // }
 
   // cach 2 : xai strategy
-  handleRequest(err: any, user: any, info: any) {
+  handleRequest<TUser = JwtPayload>(
+    err: VerifyErrors | null,
+    user: TUser | false | null,
+    info?: { name?: string; message?: string },
+  ): TUser {
     if (err) {
       throw new UnauthorizedException('Bạn không có quyền truy cập');
     }

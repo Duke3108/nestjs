@@ -1,4 +1,4 @@
-import { enumData } from '../../../utils/constants';
+import { enumData } from 'src/utils/constants';
 import {
   Entity,
   PrimaryGeneratedColumn,
