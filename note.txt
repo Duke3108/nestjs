@@ -1,1 +1,4 @@
 nest generate resource modules/user --no-spec
+
+recovercode
+F2YBT8PNKJPLKHY325UCQN2V
