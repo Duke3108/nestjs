@@ -3,10 +3,14 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import typeorm from 'src/config/typeorm';
-import { StartTimeMiddleware } from 'src/common/middlewares/startTime.middleware';
+
 import { BullModule } from '@nestjs/bullmq';
 import { MailModule } from './modules/mail/mail.module';
+import { PostCategoryModule } from './modules/post-category/post-category.module';
+import { PostModule } from './modules/post/post.module';
+import { CommentModule } from './modules/comment/comment.module';
+import typeorm from './config/typeorm';
+import { StartTimeMiddleware } from './common/middlewares/startTime.middleware';
 
 @Module({
   imports: [
@@ -30,6 +34,9 @@ import { MailModule } from './modules/mail/mail.module';
       },
     }),
     MailModule,
+    PostCategoryModule,
+    PostModule,
+    CommentModule,
   ],
 })
 export class AppModule {

@@ -9,13 +9,9 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { LocalGuard } from 'src/modules/auth/guards/local.guard';
+import { LocalGuard } from './guards/local.guard';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
-import {
-  LoginDto,
-  ResetPasswordDto,
-  VerifyPhone,
-} from 'src/modules/auth/dto/login.dto';
+import { LoginDto, ResetPasswordDto, VerifyPhone } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {

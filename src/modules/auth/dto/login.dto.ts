@@ -1,5 +1,5 @@
 import { IsEmail } from 'class-validator';
-import { StringRequired } from 'src/common/decorators/stringDecorator';
+import { StringRequired } from '../../../common/decorators/stringDecorator';
 
 export class LoginDto {
   @IsEmail()

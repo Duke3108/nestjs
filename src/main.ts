@@ -2,10 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { TransformInterceptor } from 'src/common/interceptors/response.interceptor';
-import { AllExceptionFilter } from 'src/common/filters/allException.filter';
+import { TransformInterceptor } from './common/interceptors/response.interceptor';
+import { AllExceptionFilter } from './common/filters/allException.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { CustomLogger } from 'src/common/log/customLogger';
+import { CustomLogger } from './common/log/customLogger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
