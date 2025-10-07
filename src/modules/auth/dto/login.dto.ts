@@ -1,5 +1,5 @@
 import { IsEmail } from 'class-validator';
-import { StringRequired } from 'src/common/decorators';
+import { StringRequired } from 'src/common/decorators/stringDecorator';
 
 export class LoginDto {
   @IsEmail()
@@ -13,6 +13,7 @@ export class LoginDto {
 export class ResetPasswordDto {
   @StringRequired('token')
   token: string;
+
   @StringRequired('newPassword')
   newPassword: string;
 }

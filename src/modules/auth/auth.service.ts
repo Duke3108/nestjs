@@ -2,7 +2,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { EntityManager } from 'typeorm';
 import { GenericRepository } from 'src/repositories/genericRepository';
-import { User } from 'src/modules/user/entities/user.entity';
 import brcypt from 'bcryptjs';
 import crypto from 'crypto';
 import { generateAccessToken, generateRefreshToken } from 'src/utils/jwt';
@@ -12,6 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import otpGenerator from 'otp-generator';
 import twilio from 'twilio';
 import { MailService } from 'src/modules/mail/mail.service';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class AuthService {
