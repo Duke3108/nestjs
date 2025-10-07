@@ -23,7 +23,7 @@ export class AllExceptionFilter implements ExceptionFilter {
 
     let status: number;
     let message: string = 'Có lỗi xảy ra';
-    let error: string[] | Record<string, unknown> | undefined;
+    let error: any;
 
     if (exception instanceof HttpException) {
       //lỗi có chủ đích HttpException
@@ -33,10 +33,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
       } else if (typeof exceptionResponse === 'object') {
-        const exceptionResponseObj = exceptionResponse as Record<
-          string,
-          string
-        >;
+        const exceptionResponseObj = exceptionResponse as Record<string, any>;
         message =
           exceptionResponseObj.message ||
           exceptionResponseObj.error ||
@@ -55,7 +52,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       this.logger.error(exception);
     }
 
-    const errorResponse: ApiResponse<unknown> = {
+    const errorResponse: ApiResponse<any> = {
       success: false,
       message,
       ...(error ? { error } : {}),

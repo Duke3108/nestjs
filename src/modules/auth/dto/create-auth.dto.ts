@@ -1,4 +1,4 @@
-import { StringRequired } from 'src/common/decorators/stringDecorator';
+import { StringRequired } from 'src/common/decorators';
 
 export class CreateAuthDto {
   @StringRequired('email')

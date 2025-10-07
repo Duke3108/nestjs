@@ -12,5 +12,5 @@ export interface MailJobData {
   subject: string;
   html?: string;
   template?: string;
-  context?: Record<string, string | number | boolean>;
+  context?: Record<string, any>;
 }
