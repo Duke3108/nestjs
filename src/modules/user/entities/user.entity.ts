@@ -1,3 +1,4 @@
+import { enumData } from '../../../utils/constants';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -6,7 +7,6 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { enumData } from '../utils/constants';
 
 @Entity('Users')
 export class User {
@@ -18,12 +18,6 @@ export class User {
 
   @Column({ type: 'varchar', nullable: false })
   phone!: string;
-
-  @Column({ type: 'varchar', unique: true })
-  username!: string;
-
-  @Column({ nullable: true, type: 'text' })
-  avatar!: string;
 
   @Column({ type: 'varchar', nullable: false })
   fullname!: string;
@@ -42,13 +36,13 @@ export class User {
     enum: enumData.code,
     default: enumData.code[1],
   })
-  role: string;
+  role!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  resetPwdToken: string | null;
+  resetPwdToken!: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
-  resetPwdExpires: Date | null;
+  resetPwdExpires!: Date | null;
 
   @Column({ type: 'timestamp', nullable: true })
   passwordChangedAt!: Date | null;

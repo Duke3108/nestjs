@@ -1,17 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { EntityManager } from 'typeorm';
-import { GenericRepository } from '../../repositories/genericRepository';
+import { GenericRepository } from 'src/repositories/genericRepository';
+import { User } from 'src/modules/user/entities/user.entity';
 import brcypt from 'bcryptjs';
 import crypto from 'crypto';
-import { generateAccessToken, generateRefreshToken } from '../../utils/jwt';
+import { generateAccessToken, generateRefreshToken } from 'src/utils/jwt';
 import makeToken from 'uniqid';
 import jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 import otpGenerator from 'otp-generator';
 import twilio from 'twilio';
-import { MailService } from '../mail/mail.service';
-import { User } from '../../entities/user.entity';
+import { MailService } from 'src/modules/mail/mail.service';
 
 @Injectable()
 export class AuthService {
