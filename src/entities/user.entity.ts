@@ -1,7 +1,3 @@
-import { Comment } from './comment.entity';
-import { LikeComment } from './like_comment.entity';
-import { LikePost } from './like_post.entity';
-import { Post } from './post.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -9,7 +5,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  OneToMany,
 } from 'typeorm';
 import { enumData } from '../utils/constants';
 
@@ -81,17 +76,4 @@ export class User {
 
   @DeleteDateColumn()
   deletedAt?: Date;
-
-  // Relations
-  @OneToMany(() => Post, (post) => post.user)
-  posts: Post[];
-
-  @OneToMany(() => Comment, (comment) => comment.user)
-  comments: Comment[];
-
-  @OneToMany(() => LikePost, (likePost) => likePost.user)
-  likePosts: LikePost[];
-
-  @OneToMany(() => LikeComment, (likeComment) => likeComment.user)
-  likeComments: LikeComment[];
 }
