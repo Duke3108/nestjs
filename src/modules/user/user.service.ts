@@ -2,9 +2,10 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { EntityManager, IsNull, Not } from 'typeorm';
-import { User } from 'src/modules/user/entities/user.entity';
-import { GenericRepository } from 'src/repositories/genericRepository';
+
+import { GenericRepository } from 'repositories/genericRepository';
 import brcypt from 'bcryptjs';
+import { User } from 'entities/user.entity';
 
 @Injectable()
 export class UserService {

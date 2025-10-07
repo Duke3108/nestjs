@@ -39,10 +39,10 @@ export class User {
   role!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  resetPwdToken!: string | null;
+  resetPwdToken: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
-  resetPwdExpires!: Date | null;
+  resetPwdExpires: Date | null;
 
   @Column({ type: 'timestamp', nullable: true })
   passwordChangedAt!: Date | null;

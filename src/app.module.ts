@@ -3,7 +3,8 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
+import typeorm from 'config/typeorm';
+import { StartTimeMiddleware } from 'common/middlewares/startTime.middleware';
 import { BullModule } from '@nestjs/bullmq';
 import { MailModule } from './modules/mail/mail.module';
 import typeorm from './config/typeorm';
