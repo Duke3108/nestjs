@@ -3,9 +3,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { EntityManager, IsNull, Not } from 'typeorm';
 
-import { GenericRepository } from 'src/repositories/genericRepository';
+import { GenericRepository } from 'repositories/genericRepository';
 import brcypt from 'bcryptjs';
-import { User } from 'src/entities/user.entity';
+import { User } from 'entities/user.entity';
 
 @Injectable()
 export class UserService {

@@ -50,28 +50,28 @@ export class User {
   role: string;
 
   @Column({ type: 'varchar', nullable: true })
-  resetPwdToken: string;
+  resetPwdToken: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
-  resetPwdExpires: Date;
+  resetPwdExpires: Date | null;
 
   @Column({ type: 'timestamp', nullable: true })
-  passwordChangedAt!: Date;
+  passwordChangedAt!: Date | null;
 
   @Column({ type: 'varchar', nullable: true })
-  refreshToken!: string;
+  refreshToken!: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  registerToken!: string;
+  registerToken!: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
-  registerExpires!: Date;
+  registerExpires!: Date | null;
 
   @Column({ type: 'varchar', nullable: true })
-  otp!: string;
+  otp!: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
-  otpExpires!: Date;
+  otpExpires!: Date | null;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt!: Date;
