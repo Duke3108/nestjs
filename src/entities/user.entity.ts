@@ -24,10 +24,10 @@ export class User {
   @Column({ type: 'varchar', nullable: false })
   phone!: string;
 
-  @Column({ type: 'varchar', unique: true })
+  @Column({ type: 'varchar', unique: true, nullable: false })
   username!: string;
 
-  @Column({ nullable: true, type: 'text' })
+  @Column({ type: 'text', nullable: true })
   avatar!: string;
 
   @Column({ type: 'varchar', nullable: false })

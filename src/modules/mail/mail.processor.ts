@@ -9,24 +9,23 @@ export class MailProcessor extends WorkerHost {
     super();
   }
 
-  process(job: Job<MailJobData, void, string>): Promise<void> {
-    console.log(job);
+  async process(job: Job<MailJobData, void, string>): Promise<void> {
     const { email, subject, html, template, context } = job.data;
 
     if (template) {
-      return this.mailerService.sendMail({
+      await this.mailerService.sendMail({
         to: email,
         subject,
         template,
         context,
       });
+    } else {
+      await this.mailerService.sendMail({
+        to: email,
+        subject,
+        html,
+      });
     }
-
-    return this.mailerService.sendMail({
-      to: email,
-      subject,
-      html,
-    });
   }
 
   @OnWorkerEvent('completed')

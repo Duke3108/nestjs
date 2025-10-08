@@ -7,6 +7,10 @@ import typeorm from 'config/typeorm';
 import { StartTimeMiddleware } from 'common/middlewares/startTime.middleware';
 import { BullModule } from '@nestjs/bullmq';
 import { MailModule } from './modules/mail/mail.module';
+import { PostCategoryModule } from 'modules/post-category/post-category.module';
+import { PostModule } from 'modules/post/post.module';
+import { CommentModule } from 'modules/comment/comment.module';
+import cloudinaryConfig from 'config/cloudinary.config';
 
 @Module({
   imports: [
@@ -14,7 +18,7 @@ import { MailModule } from './modules/mail/mail.module';
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [typeorm],
+      load: [typeorm, cloudinaryConfig],
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -30,6 +34,9 @@ import { MailModule } from './modules/mail/mail.module';
       },
     }),
     MailModule,
+    PostCategoryModule,
+    PostModule,
+    CommentModule,
   ],
 })
 export class AppModule {

@@ -31,7 +31,10 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
         from: '"Duke-Authentication" <no-reply@example.com>',
       },
       template: {
-        dir: join(__dirname, 'templates'),
+        dir:
+          process.env.NODE_ENV === 'production'
+            ? join(__dirname, 'templates')
+            : join(process.cwd(), 'src/modules/mail/templates'),
         adapter: new HandlebarsAdapter(),
         options: { strict: true },
       },

@@ -12,6 +12,7 @@ import otpGenerator from 'otp-generator';
 import twilio from 'twilio';
 import { MailService } from 'modules/mail/mail.service';
 import { User } from 'entities/user.entity';
+import Helper from 'utils/helper';
 
 @Injectable()
 export class AuthService {
@@ -91,6 +92,7 @@ export class AuthService {
 
     await this.userRepository.create({
       ...userData,
+      avatar: Helper.generateDefaultAvatar(userData.username),
       password: await this.hashPassword(userData.password),
       registerToken: token,
       registerExpires: new Date(Date.now() + 15 * 60 * 1000),
