@@ -5,25 +5,29 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Post } from './post.entity';
 
 @Entity('PostCategories')
 export class PostCategory {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ unique: true, type: 'varchar', nullable: false })
-  name: string;
+  name!: string;
 
   @Column({ unique: true, type: 'varchar', nullable: false })
-  slug: string;
+  slug!: string;
 
   @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 
   @OneToMany(() => Post, (post) => post.category)
   posts: Post[];

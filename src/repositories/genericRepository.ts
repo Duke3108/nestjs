@@ -1,4 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
+import { SortField } from 'common/enum/sortField';
+import { SortOrder } from 'common/enum/sortOrder';
 import {
   EntityManager,
   Repository,
@@ -30,8 +32,14 @@ export class GenericRepository<T extends ObjectLiteral> {
     where?: () => FindOptionsWhere<T> | FindOptionsWhere<T>[]; // Accepts single or multiple conditions
     relations?: string[];
   }): Promise<[T[], number]> {
-    const { pageNumber, pageSize, sortField, sortOrder, where, relations } =
-      req;
+    const {
+      pageNumber,
+      pageSize,
+      sortField = SortField.NAME,
+      sortOrder = SortOrder.ASC,
+      where,
+      relations,
+    } = req;
 
     return await this.repository.findAndCount({
       skip: (pageNumber - 1) * pageSize,
@@ -39,7 +47,7 @@ export class GenericRepository<T extends ObjectLiteral> {
       where: where ? where() : {},
       withDeleted: false,
       order: { [sortField]: sortOrder } as FindOptionsOrder<T>,
-      relations: relations as string[],
+      relations,
     });
   }
 
@@ -73,7 +81,7 @@ export class GenericRepository<T extends ObjectLiteral> {
     await this.repository.update(id, data);
   }
 
-  public async delete(id: number | string, msg?: string): Promise<void> {
+  public async delete(id: number, msg?: string): Promise<void> {
     const entity = await this.findById(id);
     if (!entity) throw new BadRequestException(msg);
     await this.repository.delete(id);
