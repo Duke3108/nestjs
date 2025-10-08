@@ -13,7 +13,7 @@ export class LikeComment {
   id: number;
 
   @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
+  createdAt: Date;
 
   @ManyToOne(() => User, (user) => user.likeComments, { onDelete: 'CASCADE' })
   user: User;
