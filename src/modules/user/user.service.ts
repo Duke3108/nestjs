@@ -31,6 +31,7 @@ export class UserService {
       'fullname',
       'phone',
       'id',
+      'avatar',
       'emailVerified',
       'phoneVerified',
       'createdAt',
