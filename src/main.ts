@@ -29,6 +29,14 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(new AllExceptionFilter());
 
+  app.getHttpAdapter().get('/', (req, res) => {
+    res.send({
+      status: 'ok',
+      message: 'Server is online',
+      timestamp: new Date().toISOString(),
+    });
+  });
+
   //Swagger setup
   const config = new DocumentBuilder()
     .setTitle('API')
